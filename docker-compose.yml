@@ -1,0 +1,33 @@
+version: "3.9" 
+services:
+  #BUild and run application with necessary ENV VARs. Also added a command to wait until redis and mysql are ready.
+  app:
+    build: .
+    ports:
+      - 8083:5000
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=root 
+      - MYSQL_PASSWORD=password 
+      - MYSQL_PORT=3306 
+      - MYSQL_DB=players 
+      - REDIS_HOST=redis 
+      - REDIS_PORT=6379
+    command: ["./wait-for-it.sh", "mysql:5432", "redis:6379"]
+    links:
+      - redis
+      - mysql
+
+  #Create mysql service with root password, and also execute database initialization script.
+  mysql:
+    image: mysql:8.0.26
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/0.init.sql
+
+  #Create redis service withdefault values, no password needed
+  redis:
+    image: redis:6.2.5
+
+#By default docker compose creates a network, so we don't need to create a new network, with the default is enough       
