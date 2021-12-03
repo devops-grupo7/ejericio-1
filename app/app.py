@@ -119,6 +119,20 @@ class Player(Resource):
     return(player)
 
 class Category(Resource):
+  def get(self):
+    parser = reqparse.RequestParser()
+    parser.add_argument('categoryId', required=True)
+    args = parser.parse_args()
+
+    category_id = args['categoryId']
+    try:
+      category = self.get_category(category_id)
+      print(category)
+      return category, 200
+    except Exception as ex:
+      print(ex)
+      return {'error': str(ex), 'category_id': category_id}, 400
+
   def post(self):
     parser = reqparse.RequestParser()
 
@@ -145,6 +159,27 @@ class Category(Resource):
       return {'error': str(ex)}, 400
   pass
 
+  def get_category(self, category_id):
+    try:
+      cursor = conn_mysql.cursor()
+      cursor.execute("SELECT category_id, name, description FROM categories WHERE category_id = (%s)", (category_id,))
+      print(cursor.rowcount)
+      row = cursor.fetchone()
+      if row == None:
+        raise ValueError('Category does not exists')
+      else:
+        category_name = row[1]
+        category_description = row[2]
+
+
+      category = dict();
+      category['category_id']=category_id
+      category['category_name']=category_name
+      category['category_description']=category_description
+    except Exception as ex:
+      raise ex
+    return(category)
+
   def create_category(self, name, description):
     try:
       cursor = conn_mysql.cursor()
@@ -155,7 +190,7 @@ class Category(Resource):
       return(category_id)
     except mysql.connector.Error as err:
       if err.errno == 1062:
-        raise ValueError("Name is already in use " + category_name)
+        raise ValueError("Name is already in use " + name)
     except Exception as ex:
       raise ex
 
