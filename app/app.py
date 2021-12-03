@@ -141,16 +141,16 @@ class Category(Resource):
 
     args = parser.parse_args()
 
-    name = args['categoryName']
-    description = args['categoryDescription']
+    category_name = args['categoryName']
+    category_description = args['categoryDescription']
 
     try:
-      category_id=self.create_category(name, description)
+      category_id=self.create_category(category_name, category_description)
 
       category = dict();
       category['category_id']=category_id
-      category['category_name']=name
-      category['category_description']=description
+      category['category_name']=category_name
+      category['category_description']=category_description
 
       return category, 200
 
