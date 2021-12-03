@@ -33,35 +33,33 @@ except Exception as ex:
   print('Error: ', ex)
   exit('Failed to connect to Redis, terminating.')
 
-
-
 class Player(Resource):
   def get(self):
     parser = reqparse.RequestParser()
     parser.add_argument('playerId', required=True)
     args = parser.parse_args()
-  
+
     player_id = args['playerId']
     try:
       player_stats = self.get_player(player_id)
       print(player_stats)
-      return player_stats, 200 
+      return player_stats, 200
     except Exception as ex:
       print(ex)
-      return {'error': str(ex), 'player_id': player_id}, 400  
+      return {'error': str(ex), 'player_id': player_id}, 400
 
 
   def post(self):
     parser = reqparse.RequestParser()
-    
+
     parser.add_argument('playerName', required=True)
     parser.add_argument('gold', required=True)
-    
+
     args = parser.parse_args()
-    
+
     player_name = args['playerName']
     gold = int(args['gold'])
-    
+
     try:
       self.validate_player(player_name, gold)
       player_id=self.create_player(player_name, gold)
@@ -71,11 +69,11 @@ class Player(Resource):
       player['player_name']=player_name
       player['gold']=gold
 
-      return player, 200 
-    
+      return player, 200
+
     except Exception as ex:
       print(ex)
-      return {'error': str(ex)}, 400 
+      return {'error': str(ex)}, 400
   pass
 
   def validate_player(self, player_name, gold):
@@ -83,9 +81,9 @@ class Player(Resource):
       raise ValueError('PlayerName lenght exceeded')
     if gold > 1000000000:
       raise ValueError('MaxGold exceeded')
-    
+
   def create_player(self, player_name, gold):
-    try: 
+    try:
       cursor = conn_mysql.cursor()
       cursor.execute("INSERT INTO players (player_name) VALUES (%s)", (player_name,))
       conn_mysql.commit()
@@ -98,7 +96,7 @@ class Player(Resource):
         raise ValueError("Username is already in use " + player_name)
     except Exception as ex:
       raise ex
-  
+
   def get_player(self, player_id):
     try:
       cursor = conn_mysql.cursor()
@@ -109,9 +107,9 @@ class Player(Resource):
         raise ValueError('User does not exists')
       else:
         player_name = row[1]
-        
+
       gold = conn_redis.get(player_id)
-   
+
       player = dict();
       player['player_id']=player_id
       player['player_name']=player_name
@@ -120,10 +118,51 @@ class Player(Resource):
       raise ex
     return(player)
 
+class Category(Resource):
+  def post(self):
+    parser = reqparse.RequestParser()
+
+    parser.add_argument('categoryName', required=True)
+    parser.add_argument('categoryDescription', required=True)
+
+    args = parser.parse_args()
+
+    name = args['categoryName']
+    description = args['categoryDescription']
+
+    try:
+      category_id=self.create_category(name, description)
+
+      category = dict();
+      category['category_id']=category_id
+      category['category_name']=name
+      category['category_description']=description
+
+      return category, 200
+
+    except Exception as ex:
+      print(ex)
+      return {'error': str(ex)}, 400
+  pass
+
+  def create_category(self, name, description):
+    try:
+      cursor = conn_mysql.cursor()
+      cursor.execute("INSERT INTO categories (name, description) VALUES (%s, %s)", (name, description))
+      conn_mysql.commit()
+      print("Category created in Database with category_id:", cursor.lastrowid)
+      category_id =  cursor.lastrowid
+      return(category_id)
+    except mysql.connector.Error as err:
+      if err.errno == 1062:
+        raise ValueError("Name is already in use " + category_name)
+    except Exception as ex:
+      raise ex
+
 app = Flask(__name__)
 api = Api(app)
-
 api.add_resource(Player, '/player') 
+api.add_resource(Category, '/category') 
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0')
