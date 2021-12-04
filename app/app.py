@@ -3,6 +3,7 @@ from flask import Flask, jsonify, make_response, json
 # import mysql.connector
 # import redis
 # import os
+import logging
 
 app = Flask(__name__)
 
@@ -133,10 +134,14 @@ def healthcheck():
     status = 200,
     mimetype = 'application/json'
   )
+
+  app.logger.info('Succesfull Health endpoint')
   return response
+
   
 
 
 if __name__ == '__main__':
+  logging.basicConfig(filename='app.log',level=logging.DEBUG)
   app.run(host='0.0.0.0')
 
