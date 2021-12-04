@@ -186,14 +186,14 @@ class Team(Resource):
       raise ex
     return(team)
 
-  def create_category(self, name, description):
+  def create_team(self, category_id, name, description):
     try:
       cursor = conn_mysql.cursor()
-      cursor.execute("INSERT INTO categories (name, description) VALUES (%s, %s)", (name, description))
+      cursor.execute("INSERT INTO teams (category_id, name, description) VALUES (%s, %s)", (category_id, name, description))
       conn_mysql.commit()
-      print("Category created in Database with category_id:", cursor.lastrowid)
-      category_id =  cursor.lastrowid
-      return(category_id)
+      print("Team created in Database with team_id:", cursor.lastrowid)
+      team_id =  cursor.lastrowid
+      return(team_id)
     except mysql.connector.Error as err:
       if err.errno == 1062:
         raise ValueError("Name is already in use " + name)
