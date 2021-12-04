@@ -177,7 +177,6 @@ class Team(Resource):
         team_name = row[2]
         team_description = row[3]
 
-
       team = dict();
       team['team_id']=team_id
       team['category_id']=category_id
@@ -185,7 +184,7 @@ class Team(Resource):
       team['team_description']=team_description
     except Exception as ex:
       raise ex
-    return(category)
+    return(team)
 
   def create_category(self, name, description):
     try:
