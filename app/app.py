@@ -167,7 +167,7 @@ class Team(Resource):
   def get_team(self, team_id):
     try:
       cursor = conn_mysql.cursor()
-      cursor.execute("SELECT team_id, category_id, name, description FROM team WHERE team_id = (%s)", (category_id,))
+      cursor.execute("SELECT team_id, category_id, team_name, team_description FROM teams WHERE team_id = (%s)", (team_id,))
       print(cursor.rowcount)
       row = cursor.fetchone()
       if row == None:
@@ -189,14 +189,14 @@ class Team(Resource):
   def create_team(self, category_id, team_name, team_description):
     try:
       cursor = conn_mysql.cursor()
-      cursor.execute("INSERT INTO teams (category_id, name, description) VALUES (%s, %s)", (category_id, team_name, team_description))
+      cursor.execute("INSERT INTO teams (category_id, team_name, team_description) VALUES (%s, %s, %s)", (category_id, team_name, team_description))
       conn_mysql.commit()
       print("Team created in Database with team_id:", cursor.lastrowid)
       team_id =  cursor.lastrowid
       return(team_id)
     except mysql.connector.Error as err:
       if err.errno == 1062:
-        raise ValueError("Name is already in use " + team_name)
+        raise ValueError("Team Name is already in use " + team_name)
     except Exception as ex:
       raise ex
 
