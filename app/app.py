@@ -147,8 +147,7 @@ class Team(Resource):
     category_id = args['categroyId']
     team_name = args['teamName']
     team_description = args['teamDescription']
-
-    
+   
     try:
       team_id=self.create_team(team_name)
 
