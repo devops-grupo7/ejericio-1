@@ -138,7 +138,14 @@ def healthcheck():
   app.logger.info('Succesfull Health endpoint')
   return response
 
-  
+@app.route('/metrics')
+def metrics():
+    response = app.response_class(
+            response=json.dumps({"status":"success"}),
+            status=200,
+            mimetype='application/json'
+    )
+    return response
 
 
 if __name__ == '__main__':
