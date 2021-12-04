@@ -141,7 +141,7 @@ def healthcheck():
 @app.route('/metrics')
 def metrics():
     response = app.response_class(
-            response=json.dumps({"status":"success"}),
+            response=json.dumps({"status":"success", "code":0}),
             status=200,
             mimetype='application/json'
     )
