@@ -6,5 +6,7 @@ CREATE TABLE IF NOT EXISTS players.players (
 
 CREATE TABLE IF NOT EXISTS players.teams (
     team_id INT AUTO_INCREMENT PRIMARY KEY,
-    team_name VARCHAR(50) UNIQUE NOT NULL
+    category_id INT NOT NULL,
+    team_name VARCHAR(50) UNIQUE NOT NULL,
+    team_description VARCHAR(50) 
 )  ENGINE=INNODB;

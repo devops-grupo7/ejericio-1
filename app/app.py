@@ -149,7 +149,7 @@ class Team(Resource):
     team_description = args['teamDescription']
    
     try:
-      team_id=self.create_team(team_name)
+      team_id=self.create_team(category_id,team_name,team_description)
 
       team = dict();
       team['team_id']=team_id
@@ -186,17 +186,17 @@ class Team(Resource):
       raise ex
     return(team)
 
-  def create_team(self, category_id, name, description):
+  def create_team(self, category_id, team_name, team_description):
     try:
       cursor = conn_mysql.cursor()
-      cursor.execute("INSERT INTO teams (category_id, name, description) VALUES (%s, %s)", (category_id, name, description))
+      cursor.execute("INSERT INTO teams (category_id, name, description) VALUES (%s, %s)", (category_id, team_name, team_description))
       conn_mysql.commit()
       print("Team created in Database with team_id:", cursor.lastrowid)
       team_id =  cursor.lastrowid
       return(team_id)
     except mysql.connector.Error as err:
       if err.errno == 1062:
-        raise ValueError("Name is already in use " + name)
+        raise ValueError("Name is already in use " + team_name)
     except Exception as ex:
       raise ex
 
