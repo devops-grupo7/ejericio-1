@@ -120,6 +120,91 @@ class Player(Resource):
       raise ex
     return(player)
 
+
+class Team(Resource):
+  def get(self):
+    parser = reqparse.RequestParser()
+    parser.add_argument('teamId', required=True)
+    args = parser.parse_args()
+
+    team_id = args['teamId']
+    try:
+      team = self.get_team(team_id)
+      print(team)
+      return team, 200
+    except Exception as ex:
+      print(ex)
+      return {'error': str(ex), 'team_id': team_id}, 400
+
+  def post(self):
+    parser = reqparse.RequestParser()
+    parser.add_argument('categoryId', required=True)
+    parser.add_argument('teamName', required=True)
+    parser.add_argument('teamDescription', required=True)
+
+    args = parser.parse_args()
+
+    category_id = args['categroyId']
+    team_name = args['teamName']
+    team_description = args['teamDescription']
+
+    
+    try:
+      team_id=self.create_team(team_name)
+
+      team = dict();
+      team['team_id']=team_id
+      team['category_id']=category_id
+      team['team_name']=team_name
+      team['team_descrption']=team_description
+
+      return team, 200
+
+    except Exception as ex:
+      print(ex)
+      return {'error': str(ex)}, 400
+  pass
+
+  def get_team(self, team_id):
+    try:
+      cursor = conn_mysql.cursor()
+      cursor.execute("SELECT team_id, category_id, name, description FROM team WHERE team_id = (%s)", (category_id,))
+      print(cursor.rowcount)
+      row = cursor.fetchone()
+      if row == None:
+        raise ValueError('Team does not exists')
+      else:
+        category_id = row[1]
+        team_name = row[2]
+        team_description = row[3]
+
+
+      team = dict();
+      team['team_id']=team_id
+      team['category_id']=category_id
+      team['team_name']=team_name
+      team['team_description']=team_description
+    except Exception as ex:
+      raise ex
+    return(category)
+
+  def create_category(self, name, description):
+    try:
+      cursor = conn_mysql.cursor()
+      cursor.execute("INSERT INTO categories (name, description) VALUES (%s, %s)", (name, description))
+      conn_mysql.commit()
+      print("Category created in Database with category_id:", cursor.lastrowid)
+      category_id =  cursor.lastrowid
+      return(category_id)
+    except mysql.connector.Error as err:
+      if err.errno == 1062:
+        raise ValueError("Name is already in use " + name)
+    except Exception as ex:
+      raise ex
+
+
+
+
 app = Flask(__name__)
 api = Api(app)
 
