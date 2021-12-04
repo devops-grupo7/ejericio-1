@@ -144,7 +144,7 @@ class Team(Resource):
 
     args = parser.parse_args()
 
-    category_id = args['categroyId']
+    category_id = args['categoryId']
     team_name = args['teamName']
     team_description = args['teamDescription']
    
@@ -207,6 +207,7 @@ app = Flask(__name__)
 api = Api(app)
 
 api.add_resource(Player, '/player') 
+api.add_resource(Team, '/team') 
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0')
