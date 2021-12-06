@@ -35,11 +35,11 @@ Expected Response:
 #
 ### Create Match
 ```bash
-curl -XPOST localhost:8083/match -d '{"team_1": "1", "team_2":"2", "match_score": "2500"}' -H "Content-Type: application/json"
+curl -XPOST localhost:8083/match -d '{"team_1": "1", "team_2":"2", "match_score": "25-20"}' -H "Content-Type: application/json"
 ```
 Expected Response:
 ```bash
-{"match_id": "1", team_1": "3", "team_2": "5", "match_score": "2500"}
+{"match_id": "1", team_1": "3", "team_2": "5", "match_score": "25-20"}
 ```
 
 #
@@ -49,7 +49,7 @@ curl -XGET localhost:8083/match -d '{"match_id":1}' -H "Content-Type: applicatio
 ```
 Expected Response:
 ```bash
-{"match_id": "1", team_1": "3", "team_2": "5", "match_score": "2500"}
+{"match_id": "1", team_1": "3", "team_2": "5", "match_score": "25-20"}
 ```
 
 #
