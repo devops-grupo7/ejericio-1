@@ -33,6 +33,26 @@ Expected Response:
 {"player_id": "1", "player_name": "johndoe", "gold": "1000"}
 ```
 #
+### Create Match
+```bash
+curl -XPOST localhost:8083/match -d '{"team_1": "1", "team_2":"2", "match_score": "2500"}' -H "Content-Type: application/json"
+```
+Expected Response:
+```bash
+{"match_id": "1", team_1": "3", "team_2": "5", "match_score": "2500"}
+```
+
+#
+### Get Match
+```bash
+curl -XGET localhost:8083/match -d '{"match_id":1}' -H "Content-Type: application/json"  
+```
+Expected Response:
+```bash
+{"match_id": "1", team_1": "3", "team_2": "5", "match_score": "2500"}
+```
+
+#
 ### Stop
 If you started the containers with -d option
 ```bash
