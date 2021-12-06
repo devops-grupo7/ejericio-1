@@ -170,6 +170,7 @@ class Match(Resource):
       return {'error': str(ex)}, 400
     pass
 
+  #El SP en codigo para el metodo GET, retorna el match del id especificado en la url
   def get_match(self, match_id):
     try:
       cursor = conn_mysql.cursor()
@@ -192,6 +193,7 @@ class Match(Resource):
       raise ex
     return (match)
 
+  #El SP en codigo para creacion del match entre 2 teams
   def create_match(self, team_1, team_2, match_score):
     try:
       cursor = conn_mysql.cursor()
