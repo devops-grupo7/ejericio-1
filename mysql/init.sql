@@ -9,3 +9,10 @@ CREATE TABLE IF NOT EXISTS players.categories (
     name VARCHAR(25) UNIQUE NOT NULL, 
     description VARCHAR(75) NOT NULL 
 )  ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS players.match(
+    match_id INT AUTO_INCREMENT PRIMARY KEY,
+    team_1 INT NULL,
+    team_2 INT NULL,
+    match_score VARCHAR(25) NOT NULL
+) ENGINE=INNODB;
