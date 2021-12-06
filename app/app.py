@@ -202,3 +202,82 @@ api.add_resource(Category, '/category')
 if __name__ == '__main__':
   app.run(host='0.0.0.0')
 
+#Se crea la clase Match
+class Match(Resource):
+  #Se crea el metodo GET
+  def get(self):
+    parser = reqparse.RequestParser()
+    parser.add_argument('matchId', required=True)
+    args = parser.parse_args()
+
+    match_id = args['matchId']
+    try:
+      match = self.get_match(match_id)
+      return match, 200
+    except Exception as ex:
+      return {'error': str(ex), 'match_id': match_id}
+
+  #Se crea el metodo Post
+  def post(self):
+    parser = reqparse.RequestParser()
+    parser.add_argument('team1', required=True)
+    parser.add_argument('team2', required=True)
+    parser.add_argument('matchScore', required=True)
+
+    args = parser.parse_args()
+
+    team_1 = args['team1']
+    team_2 = args['team2']
+    match_score = args['score']
+
+    try:
+      match_id = self.create_match(team_1, team_2, match_score)
+
+      match = dict();
+      match['match_id'] = match_id
+      match['team_1'] = team_1
+      match['team_2'] = team_2
+      match['match_score'] = match_score
+
+      return match, 200
+    except Exception as ex:
+      return {'error': str(ex)}, 400
+    pass
+
+  #El SP en codigo para el metodo GET, retorna el match del id especificado en la url
+  def get_match(self, match_id):
+    try:
+      cursor = conn_mysql.cursor()
+      cursor.execute("SELECT * FROM match WHERE match_id = (%s)", (match_id))
+      row = cursor.fetchone()
+      if row == None:
+        raise ValueError('Match does not exists')
+      else:
+        match_id = row[1]
+        team_1 = row[2]
+        team_2 = row[3]
+        match_score = row[4]
+
+      match = dict();
+      match['match_id'] = match_id
+      match['team_1'] = team_1
+      match['team_2'] = team_2
+      match['match_score'] = match_score
+    except Exception as ex:
+      raise ex
+    return (match)
+
+  #El SP en codigo para creacion del match entre 2 teams
+  def create_match(self, team_1, team_2, match_score):
+    try:
+      cursor = conn_mysql.cursor()
+      cursor.execute("INSERT INTO match (team_1, team_2, match_score) VALUES (%s, %s)", (team_1, team_2, match_score))
+      conn_mysql.commit()
+      match_id = cursor.lastrowid
+      return (match_id)
+    except Exception as ex:
+      raise ex
+      
+
+
+
