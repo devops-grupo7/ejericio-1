@@ -3,3 +3,9 @@ CREATE TABLE IF NOT EXISTS players.players (
     player_id INT AUTO_INCREMENT PRIMARY KEY,
     player_name VARCHAR(25) UNIQUE NOT NULL 
 )  ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS players.categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(25) UNIQUE NOT NULL, 
+    description VARCHAR(75) NOT NULL 
+)  ENGINE=INNODB;
