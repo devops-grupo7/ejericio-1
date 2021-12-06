@@ -1,8 +1,11 @@
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, json
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
 import redis
 import os
+import logging
+
+app = Flask(__name__)
 
 try:
   conn_mysql = mysql.connector.connect(
@@ -117,164 +120,38 @@ class Player(Resource):
     except Exception as ex:
       raise ex
     return(player)
+  
 
 class Team(Resource):
-  def get(self):
-    parser = reqparse.RequestParser()
-    parser.add_argument('teamId', required=True)
-    args = parser.parse_args()
-
-    team_id = args['teamId']
-    try:
-      team = self.get_team(team_id)
-      print(team)
-      return team, 200
-    except Exception as ex:
-      print(ex)
-      return {'error': str(ex), 'team_id': team_id}, 400
-
-  def post(self):
-    parser = reqparse.RequestParser()
-    parser.add_argument('categoryId', required=True)
-    parser.add_argument('teamName', required=True)
-    parser.add_argument('teamDescription', required=True)
-
-    args = parser.parse_args()
-
-    category_id = args['categoryId']
-    team_name = args['teamName']
-    team_description = args['teamDescription']
-   
-    try:
-      team_id=self.create_team(category_id,team_name,team_description)
-
-      team = dict();
-      team['team_id']=team_id
-      team['category_id']=category_id
-      team['team_name']=team_name
-      team['team_descrption']=team_description
-
-      return team, 200
-        except Exception as ex:
-      print(ex)
-      return {'error': str(ex)}, 400
-  pass
-
-  def get_team(self, team_id):
-    try:
-      cursor = conn_mysql.cursor()
-      cursor.execute("SELECT team_id, category_id, team_name, team_description FROM teams WHERE team_id = (%s)", (team_id,))
-      print(cursor.rowcount)
-      row = cursor.fetchone()
-      if row == None:
-        raise ValueError('Team does not exists')
-      else:
-        category_id = row[1]
-        team_name = row[2]
-        team_description = row[3]
-
-      team = dict();
-      team['team_id']=team_id
-      team['category_id']=category_id
-      team['team_name']=team_name
-      team['team_description']=team_description
-    except Exception as ex:
-      raise ex
-    return(team)
-
-  def create_team(self, category_id, team_name, team_description):
-    try:
-      cursor = conn_mysql.cursor()
-      cursor.execute("INSERT INTO teams (category_id, team_name, team_description) VALUES (%s, %s, %s)", (category_id, team_name, team_description))
-      conn_mysql.commit()
-      print("Team created in Database with team_id:", cursor.lastrowid)
-      team_id =  cursor.lastrowid
-      return(team_id)
-    except mysql.connector.Error as err:
-      if err.errno == 1062:
-        raise ValueError("Team Name is already in use " + team_name)
-    except Exception as ex:
-      raise ex
-      
-class Category(Resource):
-  def get(self):
-    parser = reqparse.RequestParser()
-    parser.add_argument('categoryId', required=True)
-    args = parser.parse_args()
-
-    category_id = args['categoryId']
-    try:
-      category = self.get_category(category_id)
-      print(category)
-      return category, 200
-    except Exception as ex:
-      print(ex)
-      return {'error': str(ex), 'category_id': category_id}, 400
-
-  def post(self):
-    parser = reqparse.RequestParser()
-
-    parser.add_argument('categoryName', required=True)
-    parser.add_argument('categoryDescription', required=True)
-
-    args = parser.parse_args()
-
-    category_name = args['categoryName']
-    category_description = args['categoryDescription']
-
-    try:
-      category_id=self.create_category(category_name, category_description)
-
-      category = dict();
-      category['category_id']=category_id
-      category['category_name']=category_name
-      category['category_description']=category_description
-
-      return category, 200
-
-  def get_category(self, category_id):
-    try:
-      cursor = conn_mysql.cursor()
-      cursor.execute("SELECT category_id, name, description FROM categories WHERE category_id = (%s)", (category_id,))
-      print(cursor.rowcount)
-      row = cursor.fetchone()
-      if row == None:
-        raise ValueError('Category does not exists')
-      else:
-        category_name = row[1]
-        category_description = row[2]
-
-
-      category = dict();
-      category['category_id']=category_id
-      category['category_name']=category_name
-      category['category_description']=category_description
-    except Exception as ex:
-      raise ex
-    return(category)
-
-  def create_category(self, name, description):
-    try:
-      cursor = conn_mysql.cursor()
-      cursor.execute("INSERT INTO categories (name, description) VALUES (%s, %s)", (name, description))
-      conn_mysql.commit()
-      print("Category created in Database with category_id:", cursor.lastrowid)
-      category_id =  cursor.lastrowid
-      return(category_id)
-    except mysql.connector.Error as err:
-      if err.errno == 1062:
-        raise ValueError("Name is already in use " + name)
-    except Exception as ex:
-      raise ex
-
-
-app = Flask(__name__)
 api = Api(app)
 api.add_resource(Player, '/player') 
 api.add_resource(Team, '/team') 
 api.add_resource(Category, '/category') 
 
+@app.route('/status')
+def healthcheck():
+  response = app.response_class(
+    response = json.dumps({ "result": "OK - Healthy"}),
+    status = 200,
+    mimetype = 'application/json'
+  )
+
+  app.logger.info('Succesfull Health endpoint')
+  return response
+
+@app.route('/metrics')
+def metrics():
+    response = app.response_class(
+            response=json.dumps({"status":"success", "code":0, "data":{"UserCount":140,"UserCountActive":23}}),
+            status=200,
+            mimetype='application/json'
+    )
+    app.logger.info('Metrics request successfull')
+    return response
+
+
 if __name__ == '__main__':
+  logging.basicConfig(filename='app.log',level=logging.DEBUG)
   app.run(host='0.0.0.0')
 
 #Se crea la clase Match
