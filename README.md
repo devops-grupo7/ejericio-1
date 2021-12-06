@@ -53,6 +53,45 @@ Expected Response:
 ```
 
 #
+### Create Match
+```bash
+curl -XPOST localhost:8083/match -d '{"team_1": "1", "team_2":"2", "match_score": "25-20"}' -H "Content-Type: application/json"
+```
+Expected Response:
+```bash
+{"match_id": "1", team_1": "3", "team_2": "5", "match_score": "25-20"}
+```
+
+#
+### Get Match
+```bash
+curl -XGET localhost:8083/match -d '{"match_id":1}' -H "Content-Type: application/json"  
+```
+Expected Response:
+```bash
+{"match_id": "1", team_1": "3", "team_2": "5", "match_score": "25-20"}
+```
+
+#
+### Create Categories
+```bash
+curl -XPOST localhost:8083/player -d '{"categoryName": "bronze", "categoryDescription":"Lowest Category Type"}' -H "Content-Type: application/json"
+```
+Expected Response:
+```bash
+{"category_id": "1", "category_name": "bronze", "category_description": "Lowest Category Type"}
+```
+
+#
+### Get Category
+```bash
+curl -XGET localhost:8083/player -d '{"categoryId":1}' -H "Content-Type: application/json"  
+```
+Expected Response:
+```bash
+{"player_id": "1", "category_name": "bronze", "category_description": "Lowest Category Type"}
+```
+#
 ### Stop
 If you started the containers with -d option
 ```bash
