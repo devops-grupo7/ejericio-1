@@ -53,6 +53,25 @@ Expected Response:
 ```
 
 #
+### Create Categories
+```bash
+curl -XPOST localhost:8083/player -d '{"categoryName": "bronze", "categoryDescription":"Lowest Category Type"}' -H "Content-Type: application/json"
+```
+Expected Response:
+```bash
+{"category_id": "1", "category_name": "bronze", "category_description": "Lowest Category Type"}
+```
+
+#
+### Get Category
+```bash
+curl -XGET localhost:8083/player -d '{"categoryId":1}' -H "Content-Type: application/json"  
+```
+Expected Response:
+```bash
+{"player_id": "1", "category_name": "bronze", "category_description": "Lowest Category Type"}
+```
+#
 ### Stop
 If you started the containers with -d option
 ```bash
