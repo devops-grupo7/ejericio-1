@@ -128,8 +128,9 @@ api.add_resource(Player, '/player')
 if __name__ == '__main__':
   app.run(host='0.0.0.0')
 
-
+#Se crea la clase Match
 class Match(Resource):
+  #Se crea el metodo GET
   def get(self):
     parser = reqparse.RequestParser()
     parser.add_argument('matchId', required=True)
@@ -142,6 +143,7 @@ class Match(Resource):
     except Exception as ex:
       return {'error': str(ex), 'match_id': match_id}
 
+  #Se crea el metodo Post
   def post(self):
     parser = reqparse.RequestParser()
     parser.add_argument('team1', required=True)
