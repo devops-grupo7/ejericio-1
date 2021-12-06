@@ -3,3 +3,10 @@ CREATE TABLE IF NOT EXISTS players.players (
     player_id INT AUTO_INCREMENT PRIMARY KEY,
     player_name VARCHAR(25) UNIQUE NOT NULL 
 )  ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS players.match(
+    match_id INT AUTO_INCREMENT PRIMARY KEY,
+    team_1 INT NULL,
+    team_2 INT NULL,
+    match_score DECIMAL(10,2) NOT NULL
+) ENGINE=INNODB;
