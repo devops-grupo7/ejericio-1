@@ -32,6 +32,46 @@ Expected Response:
 ```bash
 {"player_id": "1", "player_name": "johndoe", "gold": "1000"}
 ```
+
+### Create Teams
+```bash
+curl -XPOST localhost:8083/team -d '{"categoryID": 1, "teamName": "Alianza Lima", "teamDescription":"Club Alianza Lima 1901"}' -H "Content-Type: application/json"
+```
+Expected Response:
+```bash
+{"team_id": "1", "category_id": "1", "team_name": "Alianza Lima", "team_description": "Club Alianza Lima 1901"}
+```
+
+#
+### Get Team Data
+```bash
+curl -XGET localhost:8083/player -d '{"teamId":1}' -H "Content-Type: application/json"  
+```
+Expected Response:
+```bash
+{"team_id": "1", "team_category": "1", "team_name": "Alianza Lima", "team_descrption": "Club Alianza Lima 1901"}
+```
+
+#
+### Create Match
+```bash
+curl -XPOST localhost:8083/match -d '{"team_1": "1", "team_2":"2", "match_score": "25-20"}' -H "Content-Type: application/json"
+```
+Expected Response:
+```bash
+{"match_id": "1", team_1": "3", "team_2": "5", "match_score": "25-20"}
+```
+
+#
+### Get Match
+```bash
+curl -XGET localhost:8083/match -d '{"match_id":1}' -H "Content-Type: application/json"  
+```
+Expected Response:
+```bash
+{"match_id": "1", team_1": "3", "team_2": "5", "match_score": "25-20"}
+```
+
 #
 ### Create Categories
 ```bash
